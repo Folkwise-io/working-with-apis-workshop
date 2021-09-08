@@ -29,6 +29,7 @@ const complexQueryService = async () => {
   if (!json) {
     console.log(`Recording for query [${query}] does not exist. Performing API call...`);
     const resp = await get(`https://api.spoonacular.com/recipes/complexSearch?query=${query}&maxFat=25&number=2&apiKey=${process.env.SPOON_KEY}`);
+    json = resp.data;
 
     console.log(`
       The headers I received are:
