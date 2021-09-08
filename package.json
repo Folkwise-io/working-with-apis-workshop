@@ -5,6 +5,7 @@
   "author": "Monarch Wadia <monarch@mintbean.io>",
   "license": "MIT",
   "dependencies": {
+    "axios": "^0.21.4",
     "dotenv": "^10.0.0",
     "nodemon": "^2.0.12"
   },
@@ -12,6 +13,7 @@
     "jest": "^27.1.1"
   },
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "tdd": "jest --watch"
   }
 }
