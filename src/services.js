@@ -2,13 +2,12 @@ const { get } = require("./utils");
 const fs = require("fs");
 const path = require("path");
 
-const complexQueryService = async () => {
-  const query = `pasta`;
-
+const serviceHoc = (query, prefix, urlGenerator) => async (id) => {
   // TODO, everything below this goes into a complexQueryService.js
-
+  const url = urlGenerator(id);
   // determine the filename of the query
-  const filename = `complexQuery.${query}.json`;
+  
+  const filename = `${prefix}.${query}.json`;
   const filepath = path.join(__dirname, "..", "cache", filename);
 
   // see if the file exists, and if the json inside it is well-formed
@@ -28,7 +27,8 @@ const complexQueryService = async () => {
   // if it doesn't, make the query, save the json.
   if (!json) {
     console.log(`Recording for query [${query}] does not exist. Performing API call...`);
-    const resp = await get(`https://api.spoonacular.com/recipes/complexSearch?query=${query}&maxFat=25&number=2&apiKey=${process.env.SPOON_KEY}`);
+
+    const resp = await get(url);
     json = resp.data;
 
     console.log(`
@@ -38,7 +38,7 @@ const complexQueryService = async () => {
     `)
 
     try {
-      fs.writeFileSync(filepath, JSON.stringify(resp.data));
+      fs.writeFileSync(filepath, JSON.stringify(resp.data, null, 2));
     } catch (e) {
       console.error("WARNING! Query failed. This could eat up your API rate limit.");
       throw e;
@@ -47,6 +47,13 @@ const complexQueryService = async () => {
 
   return json;
 }
+
+const complexQueryService = serviceHoc(`pasta`, `complexQuery`,  
+() => `https://api.spoonacular.com/recipes/complexSearch?query=pasta&maxFat=25&number=2&apiKey=${process.env.SPOON_KEY}`);
+const recipeService = serviceHoc(`pasta`, `recipeInfo`,  
+(id) => `https://api.spoonacular.com/recipes/${id}/information?includeNutrition=false&apiKey=${process.env.SPOON_KEY}`);
+
+
 
 module.exports = {
   complexQueryService
